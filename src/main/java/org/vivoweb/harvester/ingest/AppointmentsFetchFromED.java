@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+
+import org.apache.commons.lang.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.vivoweb.harvester.beans.EducationBean;
@@ -442,8 +444,8 @@ public class AppointmentsFetchFromED {
 							ebean.setDegreePk(rs.getString(1));
 							ebean.setDateTimeInterval(rs.getString(5));
 							ebean.setInstituteFk(rs.getString(4));
-							ebean.setDegreeName(rs.getString(6));
-							ebean.setInstituion(rs.getString(3));
+							ebean.setDegreeName(StringEscapeUtils.escapeJava(rs.getString(6)));
+							ebean.setInstituion(StringEscapeUtils.escapeJava(rs.getString(3)));
 							ebean.setBuiltInDegreePk(rs.getString(7));
 							//log.info(ebean.toString());
 							edu.add(ebean);
