@@ -145,11 +145,11 @@ public class GrantsFetchFromED {
 			}
 			
 			/*log.info("#########################################################");
-		    log.info("Trying to fetch grants for cwid - ajg9004");
-			grant = getGrantsFromCoeus("ajg9004");
+		    log.info("Trying to fetch grants for cwid - ole2001");
+			grant = getGrantsFromCoeus("ole2001");
 			if(grant.isEmpty())
-				log.info("There is no grants for cwid - ajg9004 in Coeus");
-			checkGrantExistInVivo(grant,"ajg9004");
+				log.info("There is no grants for cwid - ole2001 in Coeus");
+			checkGrantExistInVivo(grant,"ole2001");
 			log.info("#########################################################");*/
 			
 			//Destory mysql connection pool
@@ -814,13 +814,13 @@ public class GrantsFetchFromED {
 			selectQuery.append("case when z.Sponsor = z.Orig_Sponsor then null when z.Sponsor != z.Orig_Sponsor then z.Sponsor end as Subward_Sponsor,");
 			selectQuery.append("z.spon_code,case when z.Sponsor = z.Orig_Sponsor and z.Primary_PI_Flag = 'Y' then 'PrincipalInvestigatorRole' when z.Sponsor != z.Orig_Sponsor and z.Primary_PI_Flag = 'Y' then 'PrincipalInvestigatorSubawardRole'  else 'KeyPersonnelRole' end as Role ");
 			selectQuery.append("from vivo v left join ");
-			selectQuery.append("(select distinct cwid, Account_Number, max(Award_Number) as Award_Number from vivo  group by cwid, Account_Number) x ");
+			selectQuery.append("(select distinct cwid, Account_Number, max(Award_Number) as Award_Number from vivo where program_type <> 'Contract without funding' AND Project_Period_Start IS NOT NULL AND Project_Period_End IS NOT NULL group by cwid, Account_Number) x ");
 			selectQuery.append("on x.cwid = v.cwid and x.Account_Number = v.Account_Number left join ");
-			selectQuery.append("(select distinct cwid, Account_Number, min(Project_Period_Start) as begin_date from vivo  group by cwid, Account_Number) y ");
+			selectQuery.append("(select distinct cwid, Account_Number, min(Project_Period_Start) as begin_date from vivo where program_type <> 'Contract without funding' AND Project_Period_Start IS NOT NULL AND Project_Period_End IS NOT NULL group by cwid, Account_Number) y ");
 			selectQuery.append("on y.cwid = v.cwid and y.Account_Number = v.Account_Number left join ");
 			selectQuery.append("(select distinct cwid, Account_Number, max(Project_Period_End) as end_date, max(Sponsor) as Sponsor, max(Orig_Sponsor) as Orig_Sponsor, max(spon_code) as spon_code, max(proj_title) as proj_title, min(program_type) as program_type, min(unit_name) as unit_name, min(int_unit_code) as int_unit_code, max(Primary_PI_Flag) as Primary_PI_Flag from vivo  group by cwid, Account_Number) z ");
 			selectQuery.append("on z.cwid = v.cwid and z.Account_Number = v.Account_Number ");
-			selectQuery.append("where v.cwid is not null and v.unit_name is not null ");
+			selectQuery.append("where v.cwid is not null and v.unit_name is not null and v.program_type <> 'Contract without funding' AND Project_Period_Start IS NOT NULL AND Project_Period_End IS NOT NULL ");
 			selectQuery.append("and v.cwid= '" + cwid + "' order by v.cwid, v.Account_Number");
 			
 			log.info(selectQuery.toString());
@@ -918,13 +918,13 @@ public class GrantsFetchFromED {
 			selectQuery.append("case when z.Sponsor = z.Orig_Sponsor then null when z.Sponsor != z.Orig_Sponsor then z.Sponsor end as Subward_Sponsor,");
 			selectQuery.append("z.spon_code,case when z.Sponsor = z.Orig_Sponsor and z.Primary_PI_Flag = 'Y' then 'PrincipalInvestigatorRole' when z.Sponsor != z.Orig_Sponsor and z.Primary_PI_Flag = 'Y' then 'PrincipalInvestigatorSubawardRole'  else 'KeyPersonnelRole' end as Role ");
 			selectQuery.append("from vivo v left join ");
-			selectQuery.append("(select distinct cwid, Account_Number, max(Award_Number) as Award_Number from vivo  group by cwid, Account_Number) x ");
+			selectQuery.append("(select distinct cwid, Account_Number, max(Award_Number) as Award_Number from vivo where program_type <> 'Contract without funding' AND Project_Period_Start IS NOT NULL AND Project_Period_End IS NOT NULL group by cwid, Account_Number) x ");
 			selectQuery.append("on x.cwid = v.cwid and x.Account_Number = v.Account_Number left join ");
-			selectQuery.append("(select distinct cwid, Account_Number, min(Project_Period_Start) as begin_date from vivo  group by cwid, Account_Number) y ");
+			selectQuery.append("(select distinct cwid, Account_Number, min(Project_Period_Start) as begin_date from vivo where program_type <> 'Contract without funding' AND Project_Period_Start IS NOT NULL AND Project_Period_End IS NOT NULL group by cwid, Account_Number) y ");
 			selectQuery.append("on y.cwid = v.cwid and y.Account_Number = v.Account_Number left join ");
 			selectQuery.append("(select distinct cwid, Account_Number, max(Project_Period_End) as end_date, max(Sponsor) as Sponsor, max(Orig_Sponsor) as Orig_Sponsor, max(spon_code) as spon_code, max(proj_title) as proj_title, min(program_type) as program_type, min(unit_name) as unit_name, min(int_unit_code) as int_unit_code, max(Primary_PI_Flag) as Primary_PI_Flag from vivo  group by cwid, Account_Number) z ");
 			selectQuery.append("on z.cwid = v.cwid and z.Account_Number = v.Account_Number ");
-			selectQuery.append("where v.cwid is not null and v.unit_name is not null ");
+			selectQuery.append("where v.cwid is not null and v.unit_name is not null and v.program_type <> 'Contract without funding' AND Project_Period_Start IS NOT NULL AND Project_Period_End IS NOT NULL ");
 			selectQuery.append("and v.Account_Number= '" + accountNumber + "' order by v.cwid, v.Account_Number");
 
 			//log.info(selectQuery);
@@ -1004,7 +1004,9 @@ public class GrantsFetchFromED {
 				deptName ="Complementary and Integrative Medicine";
 			}*/
 					
-			String selectQuery = "SELECT DISTINCT id FROM wcmc_department where TRIM(title) = '" + deptName.trim() + "'";
+			String selectQuery = "SELECT DISTINCT id FROM wcmc_department where TRIM(title) = '" + deptName.replaceAll("'", "''").trim() + "'";
+			
+			log.info(selectQuery);
 			
 				try {
 					st = this.asmsCon.createStatement();
