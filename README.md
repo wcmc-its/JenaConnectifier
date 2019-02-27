@@ -75,4 +75,4 @@ The workflow check against all the graphs and delete any traces of triples perta
 ## Summary of changes
 
 The following slide was presented at a WCM VIVO leadership meeting.
-![](https://github.com/wcmc-its/vivo-import-data/blob/master/SDBJenaConnect.png?raw=true "")
+![](https://github.com/wcmc-its/JenaConnectifier/blob/master/SDBJenaConnect.png?raw=true "")
