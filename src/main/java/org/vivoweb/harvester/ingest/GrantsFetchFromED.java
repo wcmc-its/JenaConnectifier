@@ -823,7 +823,7 @@ public class GrantsFetchFromED {
 			selectQuery.append("where v.cwid is not null and v.unit_name is not null and v.program_type <> 'Contract without funding' AND Project_Period_Start IS NOT NULL AND Project_Period_End IS NOT NULL ");
 			selectQuery.append("and v.cwid= '" + cwid + "' order by v.cwid, v.Account_Number");
 			
-			log.info(selectQuery.toString());
+			//log.info(selectQuery.toString());
 			
 			PreparedStatement ps = null;
 			java.sql.ResultSet rs = null;
@@ -1006,7 +1006,7 @@ public class GrantsFetchFromED {
 					
 			String selectQuery = "SELECT DISTINCT id FROM wcmc_department where TRIM(title) = '" + deptName.replaceAll("'", "''").trim() + "'";
 			
-			log.info(selectQuery);
+			//log.info(selectQuery);
 			
 				try {
 					st = this.asmsCon.createStatement();
