@@ -576,6 +576,7 @@ public class AcademicFetchFromED {
 		 */
 		private void checkForUpdates(PeopleBean pb) {
 			ArrayList<String> updateList = new ArrayList<String>();
+			ArrayList<String> insertList = new ArrayList<String>();
 			String phone = "";
 			String middleName = "";
 			String sparqlQuery = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n" +
@@ -583,7 +584,8 @@ public class AcademicFetchFromED {
 				 "PREFIX wcmc: <http://weill.cornell.edu/vivo/ontology/wcmc#> \n" +
 				 "PREFIX core: <http://vivoweb.org/ontology/core#> \n" +
 				 "PREFIX vitro: <http://vitro.mannlib.cornell.edu/ns/vitro/0.7#> \n" +
-				 "SELECT ?label ?type ?phone ?title ?email ?firstName ?lastName ?middleName \n" +
+				 "PREFIX vcard: <http://www.w3.org/2006/vcard/ns#> \n" +
+				 "SELECT ?label ?type ?phone ?title ?email ?firstName ?lastName ?middleName ?popsUrl\n" +
 				 "FROM <http://vitro.mannlib.cornell.edu/a/graph/wcmcPeople> \n" +
 				 "WHERE \n" +
 				 "{ \n" +
@@ -595,6 +597,7 @@ public class AcademicFetchFromED {
 				 "OPTIONAL { <" + this.vivoNamespace + "cwid-" + pb.getCwid().trim() + "> wcmc:officePhone ?phone . }\n" +
 				 "OPTIONAL { <" + this.vivoNamespace + "hasEmail-" + pb.getCwid().trim() + "> <http://www.w3.org/2006/vcard/ns#email> ?email . }\n" +
 				 "OPTIONAL { <" + this.vivoNamespace + "hasName-" + pb.getCwid().trim() + "> core:middleName ?middleName . }\n" +
+				 "OPTIONAL { <" + this.vivoNamespace + "popsUrl-" + pb.getCwid().trim() + "> vcard:url ?popsUrl } \n" +
 				 "}";
 			
 			log.info(sparqlQuery);
@@ -623,6 +626,22 @@ public class AcademicFetchFromED {
 							updateList.add("Mail");
 							log.info("Email was updated for cwid: " + pb.getCwid().trim());
 						}
+						
+						if(qs.get("email") == null && pb.getMail() != null && !pb.getMail().equals("")) {
+							insertList.add("Mail");
+							log.info("Email was inserted for cwid: " + pb.getCwid().trim());
+						}
+						
+						if(qs.get("phone") == null && pb.getTelephoneNumber() != null && !pb.getTelephoneNumber().equals("")) {
+							insertList.add("TelephoneNumber");
+							log.info("Phone was inserted for cwid: " + pb.getCwid().trim());
+						}
+						
+						if(qs.get("middleName") == null && pb.getMiddleName() != null && !pb.getMiddleName().equals("")) {
+							insertList.add("MiddleName");
+							log.info("Middle Name was inserted for cwid: " + pb.getCwid().trim());
+						}
+						
 						if(qs.get("phone") != null && !qs.get("phone").toString().equals(pb.getTelephoneNumber().trim())) {
 							updateList.add("TelephoneNumber");
 							log.info("Phone was updated for cwid: " + pb.getCwid().trim());
@@ -639,10 +658,15 @@ public class AcademicFetchFromED {
 							updateList.add("MiddleName");
 							log.info("Middle Name was updated for cwid: " + pb.getCwid().trim());
 						}
+						if(qs.get("popsUrl") == null && pb.getPopsProfile() != null && !pb.getPopsProfile().equals("")) {
+							insertList.add("PopsUrl");
+							log.info("Pops Url was inserted for cwid: " + pb.getCwid().trim());
+						}
 					}
 					
-					if(updateList.isEmpty())
+					if(updateList.isEmpty()) {
 						log.info("No Updates are necessary for cwid : " + pb.getCwid().trim());
+					}
 					else {
 						StringBuffer sb = new StringBuffer();
 						
@@ -700,9 +724,11 @@ public class AcademicFetchFromED {
 		                if(updateList.contains("MiddleName")) {
 		                	sb.append("<" + this.vivoNamespace + "hasName-" + pb.getCwid().trim() + "> core:middleName \"" + pb.getMiddleName().trim() + "\" .\n");
 		                }
+		                
 		                if(updateList.contains("MostSpecificType")) {
 		                	sb.append("<" + this.vivoNamespace + "cwid-" + pb.getCwid().trim() + "> vitro:mostSpecificType <" + pb.getPersonCode().trim() + "> .\n");
 		                }
+		                
 		                sb.append("} \n");
 		                sb.append("WHERE { \n");
 		                if(updateList.contains("DisplayName")) {
@@ -733,7 +759,10 @@ public class AcademicFetchFromED {
 		                
 		                log.info("Update Query: " + sb.toString());
 		                
+		                
+		                
 		                runSparqlUpdateTemplate(sb.toString(), vivoJena);
+		                
 		                this.updateCount = this.updateCount + 1;
 						
 						
@@ -760,6 +789,45 @@ public class AcademicFetchFromED {
 							this.jcf.returnConnectionToPool(vivoJenaInf, "vitro-kb-inf");
 						}
 					}
+					
+					if(!insertList.isEmpty()) {
+	                	StringBuilder sb = new StringBuilder();
+						
+						sb.append("PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n");
+						sb.append("PREFIX foaf: <http://xmlns.com/foaf/0.1/> \n");
+		                sb.append("PREFIX wcmc: <http://weill.cornell.edu/vivo/ontology/wcmc#> \n");
+		                sb.append("PREFIX core: <http://vivoweb.org/ontology/core#> \n");
+		                sb.append("PREFIX vitro: <http://vitro.mannlib.cornell.edu/ns/vitro/0.7#> \n");
+		                sb.append("PREFIX vcard: <http://www.w3.org/2006/vcard/ns#> \n");
+		                sb.append("INSERT DATA { GRAPH <http://vitro.mannlib.cornell.edu/a/graph/wcmcPeople> { \n");
+		                if(insertList.contains("TelephoneNumber")) {
+		                	sb.append("<" + this.vivoNamespace + "cwid-" + pb.getCwid().trim() + "> wcmc:officePhone \"" + pb.getTelephoneNumber().trim() + "\" .\n");			                	
+		                }
+		                if(insertList.contains("MiddleName")) {
+		                	sb.append("<" + this.vivoNamespace + "hasName-" + pb.getCwid().trim() + "> core:middleName \"" + pb.getMiddleName().trim() + "\" .\n");
+		                }
+		                if(insertList.contains("Mail")) {
+		                	sb.append("<" + this.vivoNamespace + "arg2000028-" + pb.getCwid().trim() + "> vcard:hasEmail <" + this.vivoNamespace + "hasEmail-"  + pb.getCwid().trim() + "> . \n");
+		                	sb.append("<" + this.vivoNamespace + "hasEmail-" + pb.getCwid().trim() + "> <http://www.w3.org/2006/vcard/ns#email> \"" + pb.getMail().trim() + "\" .\n");
+		                	sb.append("<" + this.vivoNamespace + "hasEmail-"  + pb.getCwid().trim() + "> rdf:type vcard:Work . \n");
+		    				sb.append("<" + this.vivoNamespace + "hasEmail-"  + pb.getCwid().trim() + "> rdf:type vcard:Email . \n");
+		    				sb.append("<" + this.vivoNamespace + "hasEmail-"  + pb.getCwid().trim() + "> <http://vivo.ufl.edu/ontology/vivo-ufl/harvestedBy> \"wcmc-harvester\" . \n");
+		                }
+		                if(insertList.contains("PopsUrl")) {
+		                	if(!pb.getPopsProfile().equals("")) {
+		        				sb.append("<" + this.vivoNamespace + "arg2000028-" + pb.getCwid().trim() + "> vcard:hasURL <" + this.vivoNamespace + "popsUrl-"  + pb.getCwid().trim() + "> . \n");
+		        				sb.append("<" + this.vivoNamespace + "popsUrl-"  + pb.getCwid().trim() + "> rdf:type vcard:URL . \n");
+		        				sb.append("<" + this.vivoNamespace + "popsUrl-"  + pb.getCwid().trim() + "> core:rank \"99\"^^<http://www.w3.org/2001/XMLSchema#int> . \n");
+		        				sb.append("<" + this.vivoNamespace + "popsUrl-"  + pb.getCwid().trim() + "> rdfs:label \"Clinical Profile \" . \n");
+		        				sb.append("<" + this.vivoNamespace + "popsUrl-"  + pb.getCwid().trim() + "> vcard:url \"" + pb.getPopsProfile().trim() + "\"^^<http://www.w3.org/2001/XMLSchema#anyURI> . \n");
+		        				
+		        			}
+		                }
+		                sb.append("}}");
+		                
+		                log.info("Insert Query: " + sb.toString());
+		                runSparqlUpdateTemplate(sb.toString(), vivoJena);
+	                }
 					
 					if(vivoJena!= null)
 						this.jcf.returnConnectionToPool(vivoJena, "wcmcPeople");
