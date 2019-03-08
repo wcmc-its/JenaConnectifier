@@ -781,90 +781,92 @@ public class AppointmentsFetchFromED {
 				
 				
 				if(!rs.hasNext()) {
-					//insert
-					log.info("Insert new appointment - position-" + role.getSorId().trim());
-					
-					role.setCrudStatus("INSERT");
-					StringBuffer insertQuery = new StringBuffer();
-					insertQuery.append("PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n");
-					insertQuery.append("PREFIX wcmc: <http://weill.cornell.edu/vivo/ontology/wcmc#> \n");
-					insertQuery.append("PREFIX vivo: <http://vivoweb.org/ontology/core#> \n");
-					insertQuery.append("PREFIX vitro: <http://vitro.mannlib.cornell.edu/ns/vitro/0.7#> \n");
-					insertQuery.append("PREFIX obo: <http://purl.obolibrary.org/obo/> \n");
-					insertQuery.append("PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \n");
-					insertQuery.append("PREFIX core: <http://vivoweb.org/ontology/core#> \n");
-					insertQuery.append("INSERT DATA { GRAPH <http://vitro.mannlib.cornell.edu/a/graph/wcmcOfa> { \n");
-					insertQuery.append("<" + this.vivoNamespace + "cwid-" + ob.getCwid().trim() + "> core:relatedBy <" + this.vivoNamespace + "position-" + role.getSorId().trim() + "> . \n");
-					if(role.isPrimaryAppointment())
-						insertQuery.append("<" + this.vivoNamespace + "position-" + role.getSorId().trim() + "> rdf:type core:PrimaryPosition . \n");
+					if(!role.isInterimAppointment()) {
+						//insert
+						log.info("Insert new appointment - position-" + role.getSorId().trim());
 						
-					insertQuery.append("<" + this.vivoNamespace + "position-" + role.getSorId().trim() + "> rdf:type core:Position . \n");
-					insertQuery.append("<" + this.vivoNamespace + "position-" + role.getSorId().trim() + "> rdf:type core:Relationship . \n");
-					insertQuery.append("<" + this.vivoNamespace + "position-" + role.getSorId().trim() + "> rdf:type obo:BFO_0000002 . \n");
-					insertQuery.append("<" + this.vivoNamespace + "position-" + role.getSorId().trim() + "> rdf:type obo:BFO_0000001 . \n");
-					insertQuery.append("<" + this.vivoNamespace + "position-" + role.getSorId().trim() + "> rdf:type obo:BFO_0000020 . \n");
-					insertQuery.append("<" + this.vivoNamespace + "position-" + role.getSorId().trim() + "> rdfs:label \"" + role.getTitleCode().trim() + "\" . \n");
-					insertQuery.append("<" + this.vivoNamespace + "position-" + role.getSorId().trim() + "> core:relates <" + this.vivoNamespace + "cwid-" + ob.getCwid().trim() + "> . \n");
-					insertQuery.append("<" + this.vivoNamespace + "position-" + role.getSorId().trim() + "> core:relates <" + this.vivoNamespace + "org-u" + role.getDeptCode() + "> . \n");
-					insertQuery.append("<" + this.vivoNamespace + "position-" + role.getSorId().trim() + "> core:DateTimeValue \"" + this.strDate + "\" . \n");
-					insertQuery.append("<" + this.vivoNamespace + "org-u" + role.getDeptCode() + "> core:relatedBy <" + this.vivoNamespace + "position-" + role.getSorId().trim() +"> . \n");
-					insertQuery.append("<" + this.vivoNamespace + "org-u" + role.getDeptCode() + "> rdf:type core:AcademicDepartment . \n");
-					insertQuery.append("<" + this.vivoNamespace + "org-u" + role.getDeptCode() + "> vitro:mostSpecificType core:AcademicDepartment . \n");
-					insertQuery.append("<" + this.vivoNamespace + "org-u" + role.getDeptCode() + "> rdf:type core:Department . \n");
-					insertQuery.append("<" + this.vivoNamespace + "org-u" + role.getDeptCode() + "> rdfs:label \"" + role.getDepartment() + "\" . \n");
-					insertQuery.append("<" + this.vivoNamespace + "org-u" + role.getDeptCode() + "> <http://purl.obolibrary.org/obo/BFO_0000050> <http://vivo.med.cornell.edu/individual/org-568> . \n");
-					insertQuery.append("<http://vivo.med.cornell.edu/individual/org-568> rdf:type core:University . \n");
-					insertQuery.append("<http://vivo.med.cornell.edu/individual/org-568> rdfs:label \"Weill Cornell Medical College\" . \n");
-					insertQuery.append("<http://vivo.med.cornell.edu/individual/org-568> <http://purl.obolibrary.org/obo/BFO_0000051> <" + this.vivoNamespace + "org-u" + role.getDeptCode() + "> . \n");
-						//if there is end date 
-						if(role.getEndDate() != null && !role.getEndDate().equals("CURRENT")) {
-							//For Date Time Interval
-							insertQuery.append("<" + this.vivoNamespace + "position-" + role.getSorId().trim() + "> core:dateTimeInterval <" + this.vivoNamespace + "dtinterval-" + role.getStartDate().trim() + "to" + role.getEndDate().trim() + "> . \n");
-							insertQuery.append("<" + this.vivoNamespace + "dtinterval-" + role.getStartDate().trim() + "to" + role.getEndDate().trim() + "> rdf:type core:DateTimeInterval . \n");
-							insertQuery.append("<" + this.vivoNamespace + "dtinterval-" + role.getStartDate().trim() + "to" + role.getEndDate().trim() + "> core:start <" + this.vivoNamespace + "date-" + role.getStartDate().trim() + "> . \n");
-							insertQuery.append("<" + this.vivoNamespace + "dtinterval-" + role.getStartDate().trim() + "to" + role.getEndDate().trim() + "> core:end <" + this.vivoNamespace + "date-" + role.getEndDate().trim() + "> . \n");
-							insertQuery.append("<" + this.vivoNamespace + "dtinterval-" + role.getStartDate().trim() + "to" + role.getEndDate().trim() + "> vitro:mostSpecificType core:DateTimeInterval . \n");
-							insertQuery.append("<" + this.vivoNamespace + "dtinterval-" + role.getStartDate().trim() + "to" + role.getEndDate().trim() + "> <http://vivo.ufl.edu/ontology/vivo-ufl/harvestedBy> \"wcmc-harvester\" . \n");
-								//For Start Date
-							insertQuery.append("<" + this.vivoNamespace + "date-" + role.getStartDate().trim() + "> rdf:type core:DateTimeValue . \n");
-							insertQuery.append("<" + this.vivoNamespace + "date-" + role.getStartDate().trim() + "> core:dateTimePrecision core:yearPrecision . \n");
-							insertQuery.append("<" + this.vivoNamespace + "date-" + role.getStartDate().trim() + "> core:dateTime \"" + role.getStartDate().trim() + "\" .\n");
-							insertQuery.append("<" + this.vivoNamespace + "date-" + role.getStartDate().trim() + "> core:dateTime \"" + role.getStartDate().trim() + "-01-01T00:00:00\" .\n");
-							insertQuery.append("<" + this.vivoNamespace + "date-" + role.getStartDate().trim() + "> vitro:mostSpecificType core:DateTimeValue . \n");
-							insertQuery.append("<" + this.vivoNamespace + "date-" + role.getStartDate().trim() + "> <http://vivo.ufl.edu/ontology/vivo-ufl/harvestedBy> \"wcmc-harvester\" . \n");
-								//For End Date
-							insertQuery.append("<" + this.vivoNamespace + "date-" + role.getEndDate().trim() + "> rdf:type core:DateTimeValue . \n");
-							insertQuery.append("<" + this.vivoNamespace + "date-" + role.getEndDate().trim() + "> core:dateTimePrecision core:yearPrecision . \n");
-							insertQuery.append("<" + this.vivoNamespace + "date-" + role.getEndDate().trim() + "> core:dateTime \"" + role.getEndDate().trim() + "\" .\n");
-							insertQuery.append("<" + this.vivoNamespace + "date-" + role.getEndDate().trim() + "> core:dateTime \"" + role.getEndDate().trim() + "-01-01T00:00:00\" .\n");
-							insertQuery.append("<" + this.vivoNamespace + "date-" + role.getEndDate().trim() + "> vitro:mostSpecificType core:DateTimeValue . \n");
-							insertQuery.append("<" + this.vivoNamespace + "date-" + role.getEndDate().trim() + "> <http://vivo.ufl.edu/ontology/vivo-ufl/harvestedBy> \"wcmc-harvester\" . \n");
+						role.setCrudStatus("INSERT");
+						StringBuffer insertQuery = new StringBuffer();
+						insertQuery.append("PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n");
+						insertQuery.append("PREFIX wcmc: <http://weill.cornell.edu/vivo/ontology/wcmc#> \n");
+						insertQuery.append("PREFIX vivo: <http://vivoweb.org/ontology/core#> \n");
+						insertQuery.append("PREFIX vitro: <http://vitro.mannlib.cornell.edu/ns/vitro/0.7#> \n");
+						insertQuery.append("PREFIX obo: <http://purl.obolibrary.org/obo/> \n");
+						insertQuery.append("PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \n");
+						insertQuery.append("PREFIX core: <http://vivoweb.org/ontology/core#> \n");
+						insertQuery.append("INSERT DATA { GRAPH <http://vitro.mannlib.cornell.edu/a/graph/wcmcOfa> { \n");
+						insertQuery.append("<" + this.vivoNamespace + "cwid-" + ob.getCwid().trim() + "> core:relatedBy <" + this.vivoNamespace + "position-" + role.getSorId().trim() + "> . \n");
+						if(role.isPrimaryAppointment())
+							insertQuery.append("<" + this.vivoNamespace + "position-" + role.getSorId().trim() + "> rdf:type core:PrimaryPosition . \n");
+							
+						insertQuery.append("<" + this.vivoNamespace + "position-" + role.getSorId().trim() + "> rdf:type core:Position . \n");
+						insertQuery.append("<" + this.vivoNamespace + "position-" + role.getSorId().trim() + "> rdf:type core:Relationship . \n");
+						insertQuery.append("<" + this.vivoNamespace + "position-" + role.getSorId().trim() + "> rdf:type obo:BFO_0000002 . \n");
+						insertQuery.append("<" + this.vivoNamespace + "position-" + role.getSorId().trim() + "> rdf:type obo:BFO_0000001 . \n");
+						insertQuery.append("<" + this.vivoNamespace + "position-" + role.getSorId().trim() + "> rdf:type obo:BFO_0000020 . \n");
+						insertQuery.append("<" + this.vivoNamespace + "position-" + role.getSorId().trim() + "> rdfs:label \"" + role.getTitleCode().trim() + "\" . \n");
+						insertQuery.append("<" + this.vivoNamespace + "position-" + role.getSorId().trim() + "> core:relates <" + this.vivoNamespace + "cwid-" + ob.getCwid().trim() + "> . \n");
+						insertQuery.append("<" + this.vivoNamespace + "position-" + role.getSorId().trim() + "> core:relates <" + this.vivoNamespace + "org-u" + role.getDeptCode() + "> . \n");
+						insertQuery.append("<" + this.vivoNamespace + "position-" + role.getSorId().trim() + "> core:DateTimeValue \"" + this.strDate + "\" . \n");
+						insertQuery.append("<" + this.vivoNamespace + "org-u" + role.getDeptCode() + "> core:relatedBy <" + this.vivoNamespace + "position-" + role.getSorId().trim() +"> . \n");
+						insertQuery.append("<" + this.vivoNamespace + "org-u" + role.getDeptCode() + "> rdf:type core:AcademicDepartment . \n");
+						insertQuery.append("<" + this.vivoNamespace + "org-u" + role.getDeptCode() + "> vitro:mostSpecificType core:AcademicDepartment . \n");
+						insertQuery.append("<" + this.vivoNamespace + "org-u" + role.getDeptCode() + "> rdf:type core:Department . \n");
+						insertQuery.append("<" + this.vivoNamespace + "org-u" + role.getDeptCode() + "> rdfs:label \"" + role.getDepartment() + "\" . \n");
+						insertQuery.append("<" + this.vivoNamespace + "org-u" + role.getDeptCode() + "> <http://purl.obolibrary.org/obo/BFO_0000050> <http://vivo.med.cornell.edu/individual/org-568> . \n");
+						insertQuery.append("<http://vivo.med.cornell.edu/individual/org-568> rdf:type core:University . \n");
+						insertQuery.append("<http://vivo.med.cornell.edu/individual/org-568> rdfs:label \"Weill Cornell Medical College\" . \n");
+						insertQuery.append("<http://vivo.med.cornell.edu/individual/org-568> <http://purl.obolibrary.org/obo/BFO_0000051> <" + this.vivoNamespace + "org-u" + role.getDeptCode() + "> . \n");
+							//if there is end date 
+							if(role.getEndDate() != null && !role.getEndDate().equals("CURRENT")) {
+								//For Date Time Interval
+								insertQuery.append("<" + this.vivoNamespace + "position-" + role.getSorId().trim() + "> core:dateTimeInterval <" + this.vivoNamespace + "dtinterval-" + role.getStartDate().trim() + "to" + role.getEndDate().trim() + "> . \n");
+								insertQuery.append("<" + this.vivoNamespace + "dtinterval-" + role.getStartDate().trim() + "to" + role.getEndDate().trim() + "> rdf:type core:DateTimeInterval . \n");
+								insertQuery.append("<" + this.vivoNamespace + "dtinterval-" + role.getStartDate().trim() + "to" + role.getEndDate().trim() + "> core:start <" + this.vivoNamespace + "date-" + role.getStartDate().trim() + "> . \n");
+								insertQuery.append("<" + this.vivoNamespace + "dtinterval-" + role.getStartDate().trim() + "to" + role.getEndDate().trim() + "> core:end <" + this.vivoNamespace + "date-" + role.getEndDate().trim() + "> . \n");
+								insertQuery.append("<" + this.vivoNamespace + "dtinterval-" + role.getStartDate().trim() + "to" + role.getEndDate().trim() + "> vitro:mostSpecificType core:DateTimeInterval . \n");
+								insertQuery.append("<" + this.vivoNamespace + "dtinterval-" + role.getStartDate().trim() + "to" + role.getEndDate().trim() + "> <http://vivo.ufl.edu/ontology/vivo-ufl/harvestedBy> \"wcmc-harvester\" . \n");
+									//For Start Date
+								insertQuery.append("<" + this.vivoNamespace + "date-" + role.getStartDate().trim() + "> rdf:type core:DateTimeValue . \n");
+								insertQuery.append("<" + this.vivoNamespace + "date-" + role.getStartDate().trim() + "> core:dateTimePrecision core:yearPrecision . \n");
+								insertQuery.append("<" + this.vivoNamespace + "date-" + role.getStartDate().trim() + "> core:dateTime \"" + role.getStartDate().trim() + "\" .\n");
+								insertQuery.append("<" + this.vivoNamespace + "date-" + role.getStartDate().trim() + "> core:dateTime \"" + role.getStartDate().trim() + "-01-01T00:00:00\" .\n");
+								insertQuery.append("<" + this.vivoNamespace + "date-" + role.getStartDate().trim() + "> vitro:mostSpecificType core:DateTimeValue . \n");
+								insertQuery.append("<" + this.vivoNamespace + "date-" + role.getStartDate().trim() + "> <http://vivo.ufl.edu/ontology/vivo-ufl/harvestedBy> \"wcmc-harvester\" . \n");
+									//For End Date
+								insertQuery.append("<" + this.vivoNamespace + "date-" + role.getEndDate().trim() + "> rdf:type core:DateTimeValue . \n");
+								insertQuery.append("<" + this.vivoNamespace + "date-" + role.getEndDate().trim() + "> core:dateTimePrecision core:yearPrecision . \n");
+								insertQuery.append("<" + this.vivoNamespace + "date-" + role.getEndDate().trim() + "> core:dateTime \"" + role.getEndDate().trim() + "\" .\n");
+								insertQuery.append("<" + this.vivoNamespace + "date-" + role.getEndDate().trim() + "> core:dateTime \"" + role.getEndDate().trim() + "-01-01T00:00:00\" .\n");
+								insertQuery.append("<" + this.vivoNamespace + "date-" + role.getEndDate().trim() + "> vitro:mostSpecificType core:DateTimeValue . \n");
+								insertQuery.append("<" + this.vivoNamespace + "date-" + role.getEndDate().trim() + "> <http://vivo.ufl.edu/ontology/vivo-ufl/harvestedBy> \"wcmc-harvester\" . \n");
+							}
+							//if there is no end date
+							else {
+								insertQuery.append("<" + this.vivoNamespace + "position-" + role.getSorId().trim() + "> core:dateTimeInterval <" + this.vivoNamespace + "dtinterval-" + role.getStartDate().trim() + "to> . \n");
+								insertQuery.append("<" + this.vivoNamespace + "dtinterval-" + role.getStartDate().trim() + "to> rdf:type core:DateTimeInterval . \n");
+								insertQuery.append("<" + this.vivoNamespace + "dtinterval-" + role.getStartDate().trim() + "to> core:start <" + this.vivoNamespace + "date-" + role.getStartDate().trim() + "> . \n");
+								insertQuery.append("<" + this.vivoNamespace + "dtinterval-" + role.getStartDate().trim() + "to> vitro:mostSpecificType core:DateTimeInterval . \n");
+								insertQuery.append("<" + this.vivoNamespace + "dtinterval-" + role.getStartDate().trim() + "to> <http://vivo.ufl.edu/ontology/vivo-ufl/harvestedBy> \"wcmc-harvester\" . \n");
+								insertQuery.append("<" + this.vivoNamespace + "date-" + role.getStartDate().trim() + "> rdf:type core:DateTimeValue . \n");
+								insertQuery.append("<" + this.vivoNamespace + "date-" + role.getStartDate().trim() + "> core:dateTimePrecision core:yearPrecision . \n");
+								insertQuery.append("<" + this.vivoNamespace + "date-" + role.getStartDate().trim() + "> core:dateTime \"" + role.getStartDate().trim() + "\" .\n");
+								insertQuery.append("<" + this.vivoNamespace + "date-" + role.getStartDate().trim() + "> core:dateTime \"" + role.getStartDate().trim() + "-01-01T00:00:00\" .\n");
+								insertQuery.append("<" + this.vivoNamespace + "date-" + role.getStartDate().trim() + "> vitro:mostSpecificType core:DateTimeValue . \n");
+								insertQuery.append("<" + this.vivoNamespace + "date-" + role.getStartDate().trim() + "> <http://vivo.ufl.edu/ontology/vivo-ufl/harvestedBy> \"wcmc-harvester\" . \n");
+							}
+							insertQuery.append("<" + this.vivoNamespace + "position-" + role.getSorId().trim() + "> <http://vivo.ufl.edu/ontology/vivo-ufl/harvestedBy> \"wcmc-harvester\" . \n");
+						insertQuery.append("}}");
+						
+						try {
+							
+							runSparqlUpdateTemplate(insertQuery.toString(), vivoJena);
+							
+							
+						} catch(IOException e) {
+							// TODO Auto-generated catch block
+							log.error("IOException", e);
 						}
-						//if there is no end date
-						else {
-							insertQuery.append("<" + this.vivoNamespace + "position-" + role.getSorId().trim() + "> core:dateTimeInterval <" + this.vivoNamespace + "dtinterval-" + role.getStartDate().trim() + "to> . \n");
-							insertQuery.append("<" + this.vivoNamespace + "dtinterval-" + role.getStartDate().trim() + "to> rdf:type core:DateTimeInterval . \n");
-							insertQuery.append("<" + this.vivoNamespace + "dtinterval-" + role.getStartDate().trim() + "to> core:start <" + this.vivoNamespace + "date-" + role.getStartDate().trim() + "> . \n");
-							insertQuery.append("<" + this.vivoNamespace + "dtinterval-" + role.getStartDate().trim() + "to> vitro:mostSpecificType core:DateTimeInterval . \n");
-							insertQuery.append("<" + this.vivoNamespace + "dtinterval-" + role.getStartDate().trim() + "to> <http://vivo.ufl.edu/ontology/vivo-ufl/harvestedBy> \"wcmc-harvester\" . \n");
-							insertQuery.append("<" + this.vivoNamespace + "date-" + role.getStartDate().trim() + "> rdf:type core:DateTimeValue . \n");
-							insertQuery.append("<" + this.vivoNamespace + "date-" + role.getStartDate().trim() + "> core:dateTimePrecision core:yearPrecision . \n");
-							insertQuery.append("<" + this.vivoNamespace + "date-" + role.getStartDate().trim() + "> core:dateTime \"" + role.getStartDate().trim() + "\" .\n");
-							insertQuery.append("<" + this.vivoNamespace + "date-" + role.getStartDate().trim() + "> core:dateTime \"" + role.getStartDate().trim() + "-01-01T00:00:00\" .\n");
-							insertQuery.append("<" + this.vivoNamespace + "date-" + role.getStartDate().trim() + "> vitro:mostSpecificType core:DateTimeValue . \n");
-							insertQuery.append("<" + this.vivoNamespace + "date-" + role.getStartDate().trim() + "> <http://vivo.ufl.edu/ontology/vivo-ufl/harvestedBy> \"wcmc-harvester\" . \n");
-						}
-						insertQuery.append("<" + this.vivoNamespace + "position-" + role.getSorId().trim() + "> <http://vivo.ufl.edu/ontology/vivo-ufl/harvestedBy> \"wcmc-harvester\" . \n");
-					insertQuery.append("}}");
-					
-					try {
-						
-						runSparqlUpdateTemplate(insertQuery.toString(), vivoJena);
-						
-						
-					} catch(IOException e) {
-						// TODO Auto-generated catch block
-						log.error("IOException", e);
 					}
 				}
 				
