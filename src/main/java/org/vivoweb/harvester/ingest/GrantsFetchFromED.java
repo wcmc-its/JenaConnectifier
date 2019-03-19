@@ -712,8 +712,8 @@ public class GrantsFetchFromED {
 			while(it.hasNext()) {
 				Entry<String, String> pair = it.next();
 				contributor = pair.getKey().toString();
-				ctype = pair.getValue().toString();
-				if(ctype.equals("KeyPersonnelRole")) {
+				ctype = pair.getValue();
+				if(ctype.equalsIgnoreCase("KeyPersonnelRole")) {
 					sb.append("<" + this.vivoNamespace + "role-kp-" + gb.getAwardNumber().trim() + "-" + contributor.trim() + "> rdf:type core:InvestigatorRole . \n");
 					sb.append("<" + this.vivoNamespace + "role-kp-" + gb.getAwardNumber().trim() + "-" + contributor.trim() + "> rdf:type obo:BFO_0000002 . \n");
 					sb.append("<" + this.vivoNamespace + "role-kp-" + gb.getAwardNumber().trim() + "-" + contributor.trim() + "> rdf:type obo:BFO_0000017 . \n");
@@ -724,7 +724,7 @@ public class GrantsFetchFromED {
 					sb.append("<" + this.vivoNamespace + "role-kp-" + gb.getAwardNumber().trim() + "-" + contributor.trim() + "> rdf:type <http://www.w3.org/2002/07/owl#Thing> . \n");
 					sb.append("<" + this.vivoNamespace + "role-kp-" + gb.getAwardNumber().trim() + "-" + contributor.trim() + "> vitro:mostSpecificType wcmc:KeyPersonnelRole . \n");
 				}
-				else if(ctype.equals("PrincipalInvestigatorRole")) {
+				else if(ctype.equalsIgnoreCase("PrincipalInvestigatorRole")) {
 					sb.append("<" + this.vivoNamespace + "role-pi-" + gb.getAwardNumber().trim() + "-" + contributor.trim() + "> rdf:type core:InvestigatorRole . \n");
 					sb.append("<" + this.vivoNamespace + "role-pi-" + gb.getAwardNumber().trim() + "-" + contributor.trim() + "> rdf:type obo:BFO_0000002 . \n");
 					sb.append("<" + this.vivoNamespace + "role-pi-" + gb.getAwardNumber().trim() + "-" + contributor.trim() + "> rdf:type obo:BFO_0000017 . \n");
@@ -735,7 +735,7 @@ public class GrantsFetchFromED {
 					sb.append("<" + this.vivoNamespace + "role-pi-" + gb.getAwardNumber().trim() + "-" + contributor.trim() + "> rdf:type <http://www.w3.org/2002/07/owl#Thing> . \n");
 					sb.append("<" + this.vivoNamespace + "role-pi-" + gb.getAwardNumber().trim() + "-" + contributor.trim() + "> vitro:mostSpecificType core:PrincipalInvestigatorRole . \n");
 				}
-				else if(ctype.equals("PrincipalInvestigatorSubawardRole")) {
+				else if(ctype.equalsIgnoreCase("PrincipalInvestigatorSubawardRole")) {
 					sb.append("<" + this.vivoNamespace + "role-pisa-" + gb.getAwardNumber().trim() + "-" + contributor.trim() + "> rdf:type core:InvestigatorRole . \n");
 					sb.append("<" + this.vivoNamespace + "role-pisa-" + gb.getAwardNumber().trim() + "-" + contributor.trim() + "> rdf:type obo:BFO_0000002 . \n");
 					sb.append("<" + this.vivoNamespace + "role-pisa-" + gb.getAwardNumber().trim() + "-" + contributor.trim() + "> rdf:type obo:BFO_0000017 . \n");
@@ -746,7 +746,7 @@ public class GrantsFetchFromED {
 					sb.append("<" + this.vivoNamespace + "role-pisa-" + gb.getAwardNumber().trim() + "-" + contributor.trim() + "> rdf:type <http://www.w3.org/2002/07/owl#Thing> . \n");
 					sb.append("<" + this.vivoNamespace + "role-pisa-" + gb.getAwardNumber().trim() + "-" + contributor.trim() + "> vitro:mostSpecificType wcmc:PrincipalInvestigatorSubawardRole . \n");
 				}
-				else if(ctype.equals("CoPrincipalInvestigatorRole")) {
+				else if(ctype.equalsIgnoreCase("CoPrincipalInvestigatorRole")) {
 					sb.append("<" + this.vivoNamespace + "role-copi-" + gb.getAwardNumber().trim() + "-" + contributor.trim() + "> rdf:type core:InvestigatorRole . \n");
 					sb.append("<" + this.vivoNamespace + "role-copi-" + gb.getAwardNumber().trim() + "-" + contributor.trim() + "> rdf:type obo:BFO_0000002 . \n");
 					sb.append("<" + this.vivoNamespace + "role-copi-" + gb.getAwardNumber().trim() + "-" + contributor.trim() + "> rdf:type obo:BFO_0000017 . \n");
