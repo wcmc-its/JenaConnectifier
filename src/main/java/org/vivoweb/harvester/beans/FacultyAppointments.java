@@ -7,10 +7,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class FacultyAppointments {
 	
+	@JsonProperty(value = "uid", required = true)
 	private String uid;
 	@JsonProperty(value = "weillCornellEduCWID", required = true)
 	private String cwid;
 	@JsonProperty(value = "weillCornellEduDepartment", required = true)
+	private String departmentId;
+	@JsonProperty(value = "weillCornellEduDepartmentLabel", required = true)
 	private String department;
 	@JsonProperty(value = "weillCornellEduStartDate", required = true)
 	private String startDate;
@@ -66,6 +69,14 @@ public class FacultyAppointments {
 		this.modifyTimeStamp = modifyTimeStamp;
 	}
 	
+	
+	
+	public String getDepartmentId() {
+		return departmentId;
+	}
+	public void setDepartmentId(String departmentId) {
+		this.departmentId = departmentId;
+	}
 	@Override
 	public String toString() {
 		log.info(this.uid + " " + this.cwid + " " + this.department + " " + this.startDate + " " + this.endDate + " " + this.modifyTimeStamp);

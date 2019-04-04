@@ -4,6 +4,7 @@ package org.vivoweb.harvester.ingest;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
@@ -86,8 +87,8 @@ public class AppointmentsFetchtoDashboard {
 		
 		private void execute() {
 			
-			//getActivePeopleFromED();
-			//getStudentsFromED();
+			getActivePeopleFromED();
+			getStudentsFromED();
 			String sid = getSplunkSid();
 			if(sid != null && !sid.isEmpty()) {
 				callSplunkAPI(sid);
@@ -329,9 +330,9 @@ public class AppointmentsFetchtoDashboard {
 	            }
 			}
 			
-			for(FacultyAppointments fa :this.appointments) {
-				fa.toString();
-			}
+		/*for(FacultyAppointments fa :this.appointments) {
+			fa.toString();
+		}*/
 			
 			lcf.destroyConnectionPool();
 				
@@ -382,15 +383,25 @@ public class AppointmentsFetchtoDashboard {
 							else
 								ps.setString(3, fa.getDepartment());
 							
-							if(fa.getStartDate().equals("NULL"))
+							if(fa.getStartDate() == null)
 								ps.setString(4, null);
-							else
-								ps.setString(4, fa.getStartDate());
+							else {
+								if(fa.getStartDate().equals("NULL")) {
+									ps.setString(4, null);
+								} else {
+									ps.setString(4, fa.getStartDate());
+								}
+							}
 							
-							if(fa.getEndDate().equals("NULL"))
+							if(fa.getEndDate() == null)
 								ps.setString(5, null);
-							else
-								ps.setString(5, fa.getEndDate());
+							else {
+								if(fa.getEndDate().equals("NULL")) {
+									ps.setString(5, null);
+								} else {
+									ps.setString(5, fa.getEndDate());
+								}
+							}
 							if(fa.getModifyTimeStamp() != null) {
 								ps.setString(6, fa.getModifyTimeStamp());
 							} else {
@@ -452,7 +463,7 @@ public class AppointmentsFetchtoDashboard {
 						ps = this.con.prepareStatement(insertQuery);
 						ps.setString(1, department);
 						ps.executeUpdate();
-						log.info("Inserted department: "+department +" into departments table");
+						log.info("Inserted department: "+ department +" into departments table");
 					}
 				}
 				catch(SQLException sqle) {
@@ -485,7 +496,7 @@ public class AppointmentsFetchtoDashboard {
 					st = this.con.createStatement();
 					rs = st.executeQuery(selectQuery);
 					
-					rs.next();
+					while(rs.next()) {
 					
 					if(rs.getString(1)!=null)
 						deptName = rs.getString(1);
@@ -494,13 +505,21 @@ public class AppointmentsFetchtoDashboard {
 					if(rs.getString(3)!=null)
 						endDate = rs.getString(3);
 					
-					
-					if(!fa.getDepartment().equals("NULL") || !fa.getStartDate().equals("NULL") || !fa.getEndDate().equals("NULL")) {
-					if(!fa.getDepartment().equals(deptName) || !fa.getStartDate().equals(startDate) || !fa.getEndDate().equals(endDate)) {
-						status = true;
+					if(fa.getDepartment() != null) {
+						if(!fa.getDepartment().equals("NULL") && !fa.getDepartment().equals(deptName) ) {
+							status = true;
+						}
 					}
-					else
-						status = false;
+					if(fa.getStartDate() != null) {
+						if(!fa.getStartDate().equals("NULL") && !fa.getStartDate().equals(deptName) ) {
+							status = true;
+						}
+					}
+					if(fa.getEndDate() != null) {
+						if(!fa.getEndDate().equals("NULL") && !fa.getEndDate().equals(deptName) ) {
+							status = true;
+						}
+					}
 				}
 				}
 				catch(SQLException sqle) {
@@ -650,6 +669,12 @@ public class AppointmentsFetchtoDashboard {
 					}; 
 				URL url = new URL("https://splunk-sec.med.cornell.edu:8089/services/search/jobs/" + sid + "/results?output_mode=json&count=0");
 				HttpsURLConnection con = (HttpsURLConnection)url.openConnection();
+				try {
+					Thread.sleep(10000L);
+				} catch(InterruptedException e) {
+					log.error("InterruptedException", e);
+				}
+				log.info("https://splunk-sec.med.cornell.edu:8089/services/search/jobs/" + sid + "/results?output_mode=json&count=0");
 				
 				SSLContext sc = SSLContext.getInstance("TLSv1.2");
 				sc.init(null, trustAllCerts, new java.security.SecureRandom());
@@ -675,9 +700,13 @@ public class AppointmentsFetchtoDashboard {
 			System.out.println(respBuf.toString());*/
 				
 				ObjectMapper objectMapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-				JsonNode json = objectMapper.readTree(con.getInputStream()).get("results");
-				if(json != null) {
-					appointments = Arrays.asList(objectMapper.treeToValue(json, FacultyAppointments[].class));
+				InputStream results = con.getInputStream();
+				
+				if(results != null) {
+					JsonNode json = objectMapper.readTree(results).get("results");
+					if(json != null) {
+						appointments = Arrays.asList(objectMapper.treeToValue(json, FacultyAppointments[].class));
+					}
 				}
 					
 				
