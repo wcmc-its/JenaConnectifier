@@ -144,13 +144,13 @@ public class GrantsFetchFromED {
 				log.info("#########################################################");
 			}
 			
-			/*log.info("#########################################################");
-		    log.info("Trying to fetch grants for cwid - sag2015");
-			grant = getGrantsFromCoeus("sag2015");
-			if(grant.isEmpty())
-				log.info("There is no grants for cwid - sag2015 in Coeus");
-			checkGrantExistInVivo(grant,"sag2015");
-			log.info("#########################################################");*/
+		/*log.info("#########################################################");
+		log.info("Trying to fetch grants for cwid - aer2006");
+		grant = getGrantsFromCoeus("aer2006");
+		if(grant.isEmpty())
+			log.info("There is no grants for cwid - aer2006 in Coeus");
+		checkGrantExistInVivo(grant,"aer2006");
+		log.info("#########################################################");*/
 			
 			//Destory mysql connection pool
 			if(this.con!=null) {
@@ -408,6 +408,17 @@ public class GrantsFetchFromED {
 							sb.append("<" + this.vivoNamespace + "grant-" + gb.getAwardNumber().trim() + "> core:relates <" + this.vivoNamespace + "cwid-" + contributor.trim() + "> . \n");
 							sb.append("<" + this.vivoNamespace + "grant-" + gb.getAwardNumber().trim() + "> core:relates <" + this.vivoNamespace + "role-copi-" + gb.getAwardNumber().trim() + "-" + contributor.trim() + "> . \n");
 						}
+						else if(ctype.equals("CoInvestigatorRole")) {
+							if(cwid.equals(contributor))
+								sb.append("<" + this.vivoNamespace + "cwid-" + cwid.trim() + "> obo:RO_0000053 <" + this.vivoNamespace + "role-coi-" + gb.getAwardNumber().trim() + "-" + contributor.trim() + "> . \n");
+							sb.append("<" + this.vivoNamespace + "role-coi-" + gb.getAwardNumber().trim() + "-" + contributor.trim() + "> rdf:type wcmc:CoInvestigatorRole . \n");
+							sb.append("<" + this.vivoNamespace + "role-coi-" + gb.getAwardNumber().trim() + "-" + contributor.trim() + "> obo:RO_0000052 <" + this.vivoNamespace + "cwid-" + contributor.trim() + "> . \n");
+							sb.append("<" + this.vivoNamespace + "role-coi-" + gb.getAwardNumber().trim() + "-" + contributor.trim() + "> vitro:mostSpecificType wcmc:CoInvestigatorRole . \n");
+							sb.append("<" + this.vivoNamespace + "role-coi-" + gb.getAwardNumber().trim() + "-" + contributor.trim() + "> core:relatedBy <" + this.vivoNamespace + "grant-" + gb.getAwardNumber().trim() + "> .\n");
+							sb.append("<" + this.vivoNamespace + "role-coi-" + gb.getAwardNumber().trim() + "-" + contributor.trim() + "> <http://vivo.ufl.edu/ontology/vivo-ufl/harvestedBy> \"wcmc-harvester\" . \n");
+							sb.append("<" + this.vivoNamespace + "grant-" + gb.getAwardNumber().trim() + "> core:relates <" + this.vivoNamespace + "cwid-" + contributor.trim() + "> . \n");
+							sb.append("<" + this.vivoNamespace + "grant-" + gb.getAwardNumber().trim() + "> core:relates <" + this.vivoNamespace + "role-coi-" + gb.getAwardNumber().trim() + "-" + contributor.trim() + "> . \n");
+						}
 					}
 					if(!dateTimeIntervalFlag && !newContributors.isEmpty())
 						sb.append("} \n");
@@ -569,6 +580,17 @@ public class GrantsFetchFromED {
 						sb.append("<" + this.vivoNamespace + "grant-" + gb.getAwardNumber().trim() + "> core:relates <" + this.vivoNamespace + "cwid-" + contributor.trim() + "> . \n");
 						sb.append("<" + this.vivoNamespace + "grant-" + gb.getAwardNumber().trim() + "> core:relates <" + this.vivoNamespace + "role-copi-" + gb.getAwardNumber().trim() + "-" + contributor.trim() + "> . \n");
 					}
+					else if(ctype.equals("CoInvestigatorRole")) {
+						if(cwid.equals(contributor))
+							sb.append("<" + this.vivoNamespace + "cwid-" + cwid.trim() + "> obo:RO_0000053 <" + this.vivoNamespace + "role-coi-" + gb.getAwardNumber().trim() + "-" + contributor.trim() + "> . \n");
+						sb.append("<" + this.vivoNamespace + "role-coi-" + gb.getAwardNumber().trim() + "-" + contributor.trim() + "> rdf:type wcmc:CoInvestigatorRole . \n");
+						sb.append("<" + this.vivoNamespace + "role-coi-" + gb.getAwardNumber().trim() + "-" + contributor.trim() + "> obo:RO_0000052 <" + this.vivoNamespace + "cwid-" + contributor.trim() + "> . \n");
+						sb.append("<" + this.vivoNamespace + "role-coi-" + gb.getAwardNumber().trim() + "-" + contributor.trim() + "> vitro:mostSpecificType wcmc:CoInvestigatorRole . \n");
+						sb.append("<" + this.vivoNamespace + "role-coi-" + gb.getAwardNumber().trim() + "-" + contributor.trim() + "> core:relatedBy <" + this.vivoNamespace + "grant-" + gb.getAwardNumber().trim() + "> .\n");
+						sb.append("<" + this.vivoNamespace + "role-coi-" + gb.getAwardNumber().trim() + "-" + contributor.trim() + "> <http://vivo.ufl.edu/ontology/vivo-ufl/harvestedBy> \"wcmc-harvester\" . \n");
+						sb.append("<" + this.vivoNamespace + "grant-" + gb.getAwardNumber().trim() + "> core:relates <" + this.vivoNamespace + "cwid-" + contributor.trim() + "> . \n");
+						sb.append("<" + this.vivoNamespace + "grant-" + gb.getAwardNumber().trim() + "> core:relates <" + this.vivoNamespace + "role-coi-" + gb.getAwardNumber().trim() + "-" + contributor.trim() + "> . \n");
+					}
 					//Add all other contributors
 					if(!cwid.equals(contributor)) {
 						sb.append("<" + this.vivoNamespace + "cwid-" + contributor + "> core:relatedBy <" + this.vivoNamespace + "grant-" + gb.getAwardNumber().trim() + "> . \n");
@@ -590,6 +612,10 @@ public class GrantsFetchFromED {
 						else if(ctype.equals("CoPrincipalInvestigatorRole")) {
 							sb.append("<" + this.vivoNamespace + "cwid-" + contributor.trim() + "> obo:RO_0000053 <" + this.vivoNamespace + "role-copi-" + gb.getAwardNumber().trim() + "-" + contributor.trim() + "> . \n");
 							sb.append("<" + this.vivoNamespace + "grant-" + gb.getAwardNumber().trim() + "> core:relates <" + this.vivoNamespace + "role-copi-" + gb.getAwardNumber().trim() + "-" + contributor.trim() + "> . \n");
+						}
+						else if(ctype.equals("CoInvestigatorRole")) {
+							sb.append("<" + this.vivoNamespace + "cwid-" + contributor.trim() + "> obo:RO_0000053 <" + this.vivoNamespace + "role-coi-" + gb.getAwardNumber().trim() + "-" + contributor.trim() + "> . \n");
+							sb.append("<" + this.vivoNamespace + "grant-" + gb.getAwardNumber().trim() + "> core:relates <" + this.vivoNamespace + "role-coi-" + gb.getAwardNumber().trim() + "-" + contributor.trim() + "> . \n");
 						}
 					}
 						
@@ -757,6 +783,17 @@ public class GrantsFetchFromED {
 					sb.append("<" + this.vivoNamespace + "role-copi-" + gb.getAwardNumber().trim() + "-" + contributor.trim() + "> rdf:type <http://www.w3.org/2002/07/owl#Thing> . \n");
 					sb.append("<" + this.vivoNamespace + "role-copi-" + gb.getAwardNumber().trim() + "-" + contributor.trim() + "> vitro:mostSpecificType vivo:CoPrincipalInvestigatorRole . \n");
 				}
+				else if(ctype.equalsIgnoreCase("CoInvestigatorRole")) {
+					sb.append("<" + this.vivoNamespace + "role-coi-" + gb.getAwardNumber().trim() + "-" + contributor.trim() + "> rdf:type core:InvestigatorRole . \n");
+					sb.append("<" + this.vivoNamespace + "role-coi-" + gb.getAwardNumber().trim() + "-" + contributor.trim() + "> rdf:type obo:BFO_0000002 . \n");
+					sb.append("<" + this.vivoNamespace + "role-coi-" + gb.getAwardNumber().trim() + "-" + contributor.trim() + "> rdf:type obo:BFO_0000017 . \n");
+					sb.append("<" + this.vivoNamespace + "role-coi-" + gb.getAwardNumber().trim() + "-" + contributor.trim() + "> rdf:type obo:BFO_0000020 .\n");
+					sb.append("<" + this.vivoNamespace + "role-coi-" + gb.getAwardNumber().trim() + "-" + contributor.trim() + "> rdf:type obo:BFO_0000023 .\n");
+					sb.append("<" + this.vivoNamespace + "role-coi-" + gb.getAwardNumber().trim() + "-" + contributor.trim() + "> rdf:type obo:BFO_0000001 .\n");
+					sb.append("<" + this.vivoNamespace + "role-coi-" + gb.getAwardNumber().trim() + "-" + contributor.trim() + "> rdf:type core:ResearcherRole . \n");
+					sb.append("<" + this.vivoNamespace + "role-coi-" + gb.getAwardNumber().trim() + "-" + contributor.trim() + "> rdf:type <http://www.w3.org/2002/07/owl#Thing> . \n");
+					sb.append("<" + this.vivoNamespace + "role-coi-" + gb.getAwardNumber().trim() + "-" + contributor.trim() + "> vitro:mostSpecificType wcmc:CoInvestigatorRole . \n");	
+				}
 			}
 			if(crudStatus.equals("INSERT")) {
 				//Funding Organization inference triples
@@ -812,7 +849,7 @@ public class GrantsFetchFromED {
 			
 			selectQuery.append("select distinct v.CWID,v.Account_Number,x.Award_Number,REPLACE(CONVERT(NVARCHAR, begin_date, 106), ' ', '-') as begin_date,REPLACE(CONVERT(NVARCHAR, end_date, 106), ' ', '-') as end_date,replace(replace(replace(z.proj_title,char(13),' '),char(10),' '),'	','') as proj_title, z.unit_name, z.int_unit_code, z.program_type,z.Orig_Sponsor,");
 			selectQuery.append("case when z.Sponsor = z.Orig_Sponsor then null when z.Sponsor != z.Orig_Sponsor then z.Sponsor end as Subward_Sponsor,");
-			selectQuery.append("z.spon_code,case when z.Sponsor = z.Orig_Sponsor and z.Primary_PI_Flag = 'Y' then 'PrincipalInvestigatorRole' when z.Sponsor != z.Orig_Sponsor and z.Primary_PI_Flag = 'Y' then 'PrincipalInvestigatorSubawardRole' when z.Role_Category = 'PI' then 'CoPrincipalInvestigatorRole' else 'KeyPersonnelRole' end as Role ");
+			selectQuery.append("z.spon_code,case when z.Sponsor = z.Orig_Sponsor and z.Primary_PI_Flag = 'Y' then 'PrincipalInvestigatorRole' when z.Sponsor != z.Orig_Sponsor and z.Primary_PI_Flag = 'Y' then 'PrincipalInvestigatorSubawardRole' when z.Role_Category = 'PI' then 'CoPrincipalInvestigatorRole' when z.Role_Category = 'Co-investigator' then 'CoInvestigatorRole' else 'KeyPersonnelRole' end as Role ");
 			selectQuery.append("from vivo v left join ");
 			selectQuery.append("(select distinct cwid, Account_Number, max(Award_Number) as Award_Number from vivo where program_type <> 'Contract without funding' AND Project_Period_Start IS NOT NULL AND Project_Period_End IS NOT NULL group by cwid, Account_Number) x ");
 			selectQuery.append("on x.cwid = v.cwid and x.Account_Number = v.Account_Number left join ");
@@ -820,7 +857,7 @@ public class GrantsFetchFromED {
 			selectQuery.append("on y.cwid = v.cwid and y.Account_Number = v.Account_Number left join ");
 			selectQuery.append("(select distinct cwid, Account_Number, max(Project_Period_End) as end_date, max(Sponsor) as Sponsor, max(Orig_Sponsor) as Orig_Sponsor, max(spon_code) as spon_code, max(proj_title) as proj_title, min(program_type) as program_type, min(unit_name) as unit_name, min(int_unit_code) as int_unit_code, max(Primary_PI_Flag) as Primary_PI_Flag, max(role_category) as Role_Category from vivo  group by cwid, Account_Number) z ");
 			selectQuery.append("on z.cwid = v.cwid and z.Account_Number = v.Account_Number ");
-			selectQuery.append("where v.cwid is not null and v.unit_name is not null and v.program_type <> 'Contract without funding' AND Project_Period_Start IS NOT NULL AND Project_Period_End IS NOT NULL ");
+			selectQuery.append("where v.cwid is not null and Confidential <> 'Y' and v.unit_name is not null and v.program_type <> 'Contract without funding' AND Project_Period_Start IS NOT NULL AND Project_Period_End IS NOT NULL ");
 			selectQuery.append("and v.cwid= '" + cwid + "' order by v.cwid, v.Account_Number");
 			
 			//log.info(selectQuery.toString());
@@ -916,7 +953,7 @@ public class GrantsFetchFromED {
 			
 			selectQuery.append("select distinct v.CWID,v.Account_Number,x.Award_Number,begin_date,end_date,replace(replace(replace(z.proj_title,char(13),' '),char(10),' '),'	','') as proj_title, z.unit_name, z.int_unit_code, z.program_type,z.Orig_Sponsor,");
 			selectQuery.append("case when z.Sponsor = z.Orig_Sponsor then null when z.Sponsor != z.Orig_Sponsor then z.Sponsor end as Subward_Sponsor,");
-			selectQuery.append("z.spon_code,case when z.Sponsor = z.Orig_Sponsor and z.Primary_PI_Flag = 'Y' then 'PrincipalInvestigatorRole' when z.Sponsor != z.Orig_Sponsor and z.Primary_PI_Flag = 'Y' then 'PrincipalInvestigatorSubawardRole' when z.Role_Category = 'PI' then 'CoPrincipalInvestigatorRole' else 'KeyPersonnelRole' end as Role ");
+			selectQuery.append("z.spon_code,case when z.Sponsor = z.Orig_Sponsor and z.Primary_PI_Flag = 'Y' then 'PrincipalInvestigatorRole' when z.Sponsor != z.Orig_Sponsor and z.Primary_PI_Flag = 'Y' then 'PrincipalInvestigatorSubawardRole' when z.Role_Category = 'PI' then 'CoPrincipalInvestigatorRole' when z.Role_Category = 'Co-investigator' then 'CoInvestigatorRole' else 'KeyPersonnelRole' end as Role ");
 			selectQuery.append("from vivo v left join ");
 			selectQuery.append("(select distinct cwid, Account_Number, max(Award_Number) as Award_Number from vivo where program_type <> 'Contract without funding' AND Project_Period_Start IS NOT NULL AND Project_Period_End IS NOT NULL group by cwid, Account_Number) x ");
 			selectQuery.append("on x.cwid = v.cwid and x.Account_Number = v.Account_Number left join ");
@@ -924,7 +961,7 @@ public class GrantsFetchFromED {
 			selectQuery.append("on y.cwid = v.cwid and y.Account_Number = v.Account_Number left join ");
 			selectQuery.append("(select distinct cwid, Account_Number, max(Project_Period_End) as end_date, max(Sponsor) as Sponsor, max(Orig_Sponsor) as Orig_Sponsor, max(spon_code) as spon_code, max(proj_title) as proj_title, min(program_type) as program_type, min(unit_name) as unit_name, min(int_unit_code) as int_unit_code, max(Primary_PI_Flag) as Primary_PI_Flag, max(role_category) as Role_Category from vivo  group by cwid, Account_Number) z ");
 			selectQuery.append("on z.cwid = v.cwid and z.Account_Number = v.Account_Number ");
-			selectQuery.append("where v.cwid is not null and v.unit_name is not null and v.program_type <> 'Contract without funding' AND Project_Period_Start IS NOT NULL AND Project_Period_End IS NOT NULL ");
+			selectQuery.append("where v.cwid is not null and Confidential <> 'Y' and v.unit_name is not null and v.program_type <> 'Contract without funding' AND Project_Period_Start IS NOT NULL AND Project_Period_End IS NOT NULL ");
 			selectQuery.append("and v.Account_Number= '" + accountNumber + "' order by v.cwid, v.Account_Number");
 
 			//log.info(selectQuery);

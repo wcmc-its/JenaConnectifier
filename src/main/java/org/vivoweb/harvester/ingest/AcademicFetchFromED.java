@@ -671,6 +671,7 @@ public class AcademicFetchFromED {
 						StringBuffer sb = new StringBuffer();
 						
 						sb.append("PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n");
+						sb.append("PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \n");
 						sb.append("PREFIX foaf: <http://xmlns.com/foaf/0.1/> \n");
 		                sb.append("PREFIX wcmc: <http://weill.cornell.edu/vivo/ontology/wcmc#> \n");
 		                sb.append("PREFIX core: <http://vivoweb.org/ontology/core#> \n");
@@ -794,6 +795,7 @@ public class AcademicFetchFromED {
 	                	StringBuilder sb = new StringBuilder();
 						
 						sb.append("PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n");
+						sb.append("PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \n");
 						sb.append("PREFIX foaf: <http://xmlns.com/foaf/0.1/> \n");
 		                sb.append("PREFIX wcmc: <http://weill.cornell.edu/vivo/ontology/wcmc#> \n");
 		                sb.append("PREFIX core: <http://vivoweb.org/ontology/core#> \n");
