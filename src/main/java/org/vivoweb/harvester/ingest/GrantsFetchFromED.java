@@ -142,6 +142,7 @@ public class GrantsFetchFromED {
 				if(grant.isEmpty())
 					log.info("There is no grants for cwid - " + cwid + " in Coeus");
 				checkGrantExistInVivo(grant,cwid);
+				deleteConfidentialGrants(grant, cwid);
 				log.info("#########################################################");
 			}
 			
