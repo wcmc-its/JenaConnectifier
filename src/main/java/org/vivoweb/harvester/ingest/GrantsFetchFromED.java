@@ -751,11 +751,15 @@ public class GrantsFetchFromED {
 						}
 						
 						sb.setLength(0);
+						sb.append("PREFIX obo: <http://purl.obolibrary.org/obo/> \n");
+						sb.append("PREFIX core: <http://vivoweb.org/ontology/core#> \n");
 						sb.append("WITH <http://vitro.mannlib.cornell.edu/a/graph/wcmcCoeus> \n");
 						sb.append("DELETE { \n");
-						sb.append("<" + entry.getValue() + "> ?cwidPred ?cwidObj . \n");
+						sb.append("<" + entry.getValue() + "> core:relatedBy <" + this.vivoNamespace + "grant-" + grantid.trim() + "> . \n");
+						sb.append("<" + entry.getValue() + "> obo:RO_0000053 <" + entry.getKey() + "> . \n");
 						sb.append("} WHERE { \n");
-						sb.append("<" + entry.getValue() + "> ?cwidPred ?cwidObj . \n");
+						sb.append("<" + entry.getValue() + "> core:relatedBy <" + this.vivoNamespace + "grant-" + grantid.trim() + "> . \n");
+						sb.append("<" + entry.getValue() + "> obo:RO_0000053 <" + entry.getKey() + "> . \n");
 						sb.append("}");
 						try {
 							vivoJena.executeUpdateQuery(sb.toString(), true);
