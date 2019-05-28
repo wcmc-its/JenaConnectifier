@@ -365,7 +365,25 @@ public class AppointmentsFetchtoDashboard {
 							boolean status = checkForUpdates(fa);
 							if(status == true) {
 								importDepartments(fa.getDepartment());
-								ps = this.con.prepareStatement("UPDATE violin_appointments SET weillCornellEduDepartment = '" + fa.getDepartment() + "' , weillCornellEduStartDate = '" + fa.getStartDate() + "' , weillCornellEduEndDate = '" + fa.getEndDate() + "' where uid = '" + fa.getUid() + "'");
+								ps = this.con.prepareStatement("UPDATE violin_appointments SET weillCornellEduDepartment = '" + fa.getDepartment() + "' , weillCornellEduStartDate = ? , weillCornellEduEndDate = ? where uid = '" + fa.getUid() + "'");
+								if(fa.getStartDate() == null)
+									ps.setString(1, null);
+								else {
+									if(fa.getStartDate().equals("NULL")) {
+										ps.setString(1, null);
+									} else {
+										ps.setString(1, fa.getStartDate());
+									}
+								}
+								if(fa.getEndDate() == null)
+									ps.setString(2, null);
+								else {
+									if(fa.getEndDate().equals("NULL")) {
+										ps.setString(2, null);
+									} else {
+										ps.setString(2, fa.getEndDate());
+									}
+								}
 								ps.executeUpdate();
 							}
 							else {
@@ -506,17 +524,17 @@ public class AppointmentsFetchtoDashboard {
 						endDate = rs.getString(3);
 					
 					if(fa.getDepartment() != null) {
-						if(!fa.getDepartment().equals("NULL") && !fa.getDepartment().equals(deptName) ) {
+						if(!fa.getDepartment().equals(deptName) ) {
 							status = true;
 						}
 					}
 					if(fa.getStartDate() != null) {
-						if(!fa.getStartDate().equals("NULL") && !fa.getStartDate().equals(deptName) ) {
+						if(!fa.getStartDate().equals(startDate) ) {
 							status = true;
 						}
 					}
 					if(fa.getEndDate() != null) {
-						if(!fa.getEndDate().equals("NULL") && !fa.getEndDate().equals(deptName) ) {
+						if(!fa.getEndDate().equals(endDate) ) {
 							status = true;
 						}
 					}
@@ -670,7 +688,7 @@ public class AppointmentsFetchtoDashboard {
 				URL url = new URL("https://splunk-sec.med.cornell.edu:8089/services/search/jobs/" + sid + "/results?output_mode=json&count=0");
 				HttpsURLConnection con = (HttpsURLConnection)url.openConnection();
 				try {
-					Thread.sleep(10000L);
+					Thread.sleep(20000L);
 				} catch(InterruptedException e) {
 					log.error("InterruptedException", e);
 				}
