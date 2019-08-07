@@ -709,6 +709,15 @@ public class AppointmentsFetchFromED {
 					sb.append("<" + this.vivoNamespace + "degree/academicDegree" + edu.getBuiltInDegreePk().trim() + "> vitro:mostSpecificType <http://vivoweb.org/ontology/core#AcademicDegree> . \n");
 					insertCount = insertCount + 1;
 				}
+				if(edu.getCrudStatus().equals("UPDATE")) {
+					sb.append("<" + this.vivoNamespace + "org-" + edu.getInstituteFk().trim() + "> obo:RO_0000056 <" + this.vivoNamespace + "educationalProcess-" + ob.getCwid().trim() + "-" + edu.getDegreePk() + "> . \n");
+					sb.append("<" + this.vivoNamespace + "org-" + edu.getInstituteFk().trim() + "> rdf:type obo:BFO_0000004 . \n");
+					sb.append("<" + this.vivoNamespace + "org-" + edu.getInstituteFk().trim() + "> rdf:type obo:BFO_0000001 . \n");
+					sb.append("<" + this.vivoNamespace + "org-" + edu.getInstituteFk().trim() + "> rdf:type obo:BFO_0000002 . \n");
+					sb.append("<" + this.vivoNamespace + "org-" + edu.getInstituteFk().trim() + "> rdf:type <http://xmlns.com/foaf/0.1/Organization> . \n");
+					sb.append("<" + this.vivoNamespace + "org-" + edu.getInstituteFk().trim() + "> rdf:type <http://www.w3.org/2002/07/owl#Thing> . \n");
+					sb.append("<" + this.vivoNamespace + "org-" + edu.getInstituteFk().trim() + "> rdf:type <http://xmlns.com/foaf/0.1/Agent> . \n");
+				}
 			}
 			//For roles
 			for(RoleBean rb: ob.getRoles()) {
@@ -1103,6 +1112,8 @@ public class AppointmentsFetchFromED {
 					if(instituteFk != Integer.parseInt(edu.getInstituteFk())) {
 						log.info("Insitition needs to be updated to " + edu.getInstituion() + " for educationalTraining-" + edu.getDegreePk().trim() + " with cwid " + ob.getCwid().trim());
 						sb.setLength(0);
+						sb.append("PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n");
+						sb.append("PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>");
 						sb.append("PREFIX core: <http://vivoweb.org/ontology/core#> \n");
 						sb.append("PREFIX obo: <http://purl.obolibrary.org/obo/> \n");
 						sb.append("WITH <http://vitro.mannlib.cornell.edu/a/graph/wcmcOfa> \n");
@@ -1114,6 +1125,9 @@ public class AppointmentsFetchFromED {
 						sb.append("INSERT { \n");
 						sb.append("<" + this.vivoNamespace + "educationalTraining-" + ob.getCwid().trim() + "-" + edu.getDegreePk() + "> core:assignedBy <" + this.vivoNamespace + "org-" + edu.getInstituteFk().trim() + "> . \n");
 						sb.append("<" + this.vivoNamespace + "org-" + edu.getInstituteFk().trim() + "> core:assigns <" + this.vivoNamespace + "educationalTraining-" + ob.getCwid().trim() + "-" + edu.getDegreePk().trim() + "> .\n");
+						sb.append("<" + this.vivoNamespace + "org-" + edu.getInstituteFk().trim() + "> rdf:type <http://xmlns.com/foaf/0.1/Organization> .\n");
+						sb.append("<" + this.vivoNamespace + "org-" + edu.getInstituteFk().trim() + "> rdfs:label \"" + edu.getInstituion() + "\" .\n");
+						sb.append("<" + this.vivoNamespace + "org-" + edu.getInstituteFk().trim() + "> <http://vivo.ufl.edu/ontology/vivo-ufl/harvestedBy> \"wcmc-harvester\" .\n");
 						sb.append("<" + this.vivoNamespace + "educationalProcess-" + ob.getCwid().trim() + "-" + edu.getDegreePk().trim() + "> obo:RO_0000057 <" + this.vivoNamespace + "org-" + edu.getInstituteFk().trim() + "> . \n");
 						sb.append("} \n");
 						sb.append("WHERE { \n");
