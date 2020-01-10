@@ -147,12 +147,12 @@ public class GrantsFetchFromED {
 			}
 			
 		/*log.info("#########################################################");
-		log.info("Trying to fetch grants for cwid - ccole");
-		grant = getGrantsFromCoeus("ccole");
+		log.info("Trying to fetch grants for cwid - arj2005");
+		grant = getGrantsFromCoeus("arj2005");
 		if(grant.isEmpty())
-			log.info("There is no grants for cwid - ccole in Coeus");
-		checkGrantExistInVivo(grant,"ccole");
-		deleteConfidentialGrants(grant, "ccole");
+			log.info("There is no grants for cwid - arj2005 in Coeus");
+		checkGrantExistInVivo(grant,"arj2005");
+		deleteConfidentialGrants(grant, "arj2005");
 		log.info("#########################################################");*/
 			
 			//Destory mysql connection pool
@@ -465,7 +465,7 @@ public class GrantsFetchFromED {
 				sb.append("} \n");
 				if(dateTimeIntervalFlag) {
 					sb.append("WHERE { \n");
-					sb.append("<" + this.vivoNamespace + "grant-" + gb.getAwardNumber().trim() + "> core:dateTimeInterval <" + this.vivoNamespace + "dtinterval-" + dates[0].trim() + "to" + dates[1].trim() + "> . \n");
+					sb.append("OPTIONAL {<" + this.vivoNamespace + "grant-" + gb.getAwardNumber().trim() + "> core:dateTimeInterval <" + this.vivoNamespace + "dtinterval-" + dates[0].trim() + "to" + dates[1].trim() + "> . \n");
 					
 					//Start Date Section
 					sb.append("<" + this.vivoNamespace + "date-" + beginDate.trim() + "> rdf:type core:DateTimeValue . \n");
@@ -478,7 +478,7 @@ public class GrantsFetchFromED {
 					sb.append("<" + this.vivoNamespace + "date-" + endDate.trim() + "> core:dateTime \"" + endDate.trim() + "T00:00:00\" . \n" );
 					sb.append("<" + this.vivoNamespace + "date-" + endDate.trim() + "> <http://vivo.ufl.edu/ontology/vivo-ufl/harvestedBy> \"wcmc-harvester\" . \n");
 					sb.append("<" + this.vivoNamespace + "dtinterval-" + dates[0].trim() + "to" + dates[1].trim() + "> ?p ?o . \n");
-					sb.append("}");
+					sb.append("}}");
 				}
 				
 				//log.info(sb.toString());
@@ -1152,7 +1152,7 @@ public class GrantsFetchFromED {
 			selectQuery.append("where v.cwid is not null and Confidential <> 'Y' and v.unit_name is not null and v.program_type <> 'Contract without funding' AND Project_Period_Start IS NOT NULL AND Project_Period_End IS NOT NULL ");
 			selectQuery.append("and v.cwid= '" + cwid + "' order by v.cwid, v.Account_Number");
 			
-			//log.info(selectQuery.toString());
+			log.info(selectQuery.toString());
 			
 			PreparedStatement ps = null;
 			java.sql.ResultSet rs = null;
