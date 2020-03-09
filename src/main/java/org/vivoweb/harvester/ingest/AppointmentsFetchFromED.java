@@ -333,10 +333,20 @@ public class AppointmentsFetchFromED {
 						if(Integer.parseInt(roles.get(j).getStartDate()) > Integer.parseInt(roles.get(index).getStartDate())){
 							roles.get(j).setStartDate(roles.get(index).getStartDate());
 							roles.remove(index);
-						}
-						else {
+						} else if(Integer.parseInt(roles.get(j).getStartDate()) == Integer.parseInt(roles.get(index).getStartDate())) {
+							if(roles.get(j).getEndDate() != null && roles.get(j).getEndDate().equals("CURRENT")) {
+								roles.remove(index);
+								break;
+							}
+							if(roles.get(index).getEndDate() != null && roles.get(index).getEndDate().equals("CURRENT")) {
+								roles.remove(j);
+								break;
+							}
+							
+						} else {
 							roles.get(index).setStartDate(roles.get(j).getStartDate());
 							roles.remove(j);
+							break;
 						}
 						
 						
